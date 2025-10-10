@@ -1,0 +1,19 @@
+# Environment & database
+.env
+instance/
+*.db
+
+# Uploads
+static/uploads/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# VSCode or IDE
+.vscode/
+.idea/
+.vercel

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { margin: 40px; }
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 14px;
+      color: #000;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .centered {
+      text-align: center;
+      font-size: 12px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      font-size: 16px;
+      border-bottom: 1px solid #000;
+      margin-top: 25px;
+    }
+    .section { margin-bottom: 20px; }
+    .entry {
+      margin-bottom: 15px;
+    }
+    .bold { font-weight: bold; }
+    .italic { font-style: italic; }
+    .small { font-size: 12px; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>{{ cv.first_name }} {{ cv.last_name }}</h1>
+  <div class="centered">
+    {{ cv.city }} • {{ cv.email }} • {{ cv.phone }}
+  </div>
+  <!-- PROFIL -->
+  {% if cv.profile_description %}
+    <div class="section">
+      <h2>Profile</h2>
+      <p>{{ cv.profile_description }}</p>
+    </div>
+  {% endif %}
+  <!-- EDUCATION -->
+  {% if cv.educations %}
+    <h2>Education</h2>
+    <div class="section">
+      {% for edu in cv.educations %}
+        <div class="entry">
+          <div class="bold">{{ edu.school_name }}</div>
+          <div class="italic">{{ edu.degree }}{% if edu.major %}, {{ edu.major }}{% endif %}</div>
+          <div class="small">{{ edu.start_date or '' }} – {{ edu.end_date or '' }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <!-- EXPERIENCE -->
+  {% if cv.experiences %}
+    <h2>Experience</h2>
+    <div class="section">
+      {% for exp in cv.experiences %}
+        <div class="entry">
+          <div class="bold">{{ exp.company }}</div>
+          <div class="italic">{{ exp.job_title }}</div>
+          <div class="small">{{ exp.start_date or '' }} – {{ exp.end_date or '' }}</div>
+          {% if exp.description %}<p>{{ exp.description }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <!-- LEADERSHIP & ACTIVITIES -->
+  {% if cv.leaderships or cv.activities %}
+    <h2>Leadership & Activities</h2>
+    <div class="section">
+      {% for lead in cv.leaderships %}
+        <div class="entry">
+          <div class="bold">{{ lead.organization }}</div>
+          <div class="italic">{{ lead.role }}</div>
+          <div class="small">{{ lead.start_date or '' }} – {{ lead.end_date or '' }}</div>
+          {% if lead.description %}<p>{{ lead.description }}</p>{% endif %}
+        </div>
+      {% endfor %}
+      {% for act in cv.activities %}
+        <div class="entry">
+          <div class="bold">{{ act.name }}</div>
+          <div class="small">{{ act.start_date or '' }} – {{ act.end_date or '' }}</div>
+          {% if act.description %}<p>{{ act.description }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <!-- SKILLS & INTERESTS -->
+  {% if cv.skills or cv.languages or cv.interests %}
+    <h2>Skills & Interests</h2>
+    <div class="section">
+      {% if cv.skills %}
+        <div><span class="bold">Technical:</span>
+          {{ cv.skills | map(attribute='name') | join(', ') }}
+        </div>
+      {% endif %}
+      {% if cv.languages %}
+        <div><span class="bold">Language:</span>
+          {% for lang in cv.languages %}
+            {{ lang.name }}{% if lang.proficiency %} ({{ lang.proficiency }}){% endif %}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if cv.interests %}
+        <div><span class="bold">Interests:</span>
+          {{ cv.interests | map(attribute='description') | join(', ') }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { 
+      margin: 0; 
+      size: A4;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+      color: #333;
+    }
+    .container { 
+      display: flex; 
+      min-height: 100vh;
+      max-width: 794px;   /* A4 width at 96 DPI */
+      margin: 0 auto;
+      overflow: visible;
+    }
+    .left {
+      width: 30%; 
+      background: linear-gradient(135deg, #8e44ad, #9b59b6); 
+      color: #fff; 
+      padding: 40px 25px;
+      min-height: 100vh;
+    }
+    .right {
+      width: 70%; 
+      background: #f9f9f9; 
+      padding: 40px 35px;
+      min-height: 100vh;
+    }
+    .photo {
+      width: 120px; 
+      height: 120px; 
+      border-radius: 50%; 
+      object-fit: cover;
+      display: block; 
+      margin: 0 auto 20px; 
+      border: 4px solid #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    h1 { 
+      font-size: 28px; 
+      margin: 0; 
+      color: #2c3e50;
+      border-bottom: 3px solid #8e44ad;
+      padding-bottom: 10px;
+    }
+    h2 { 
+      font-size: 18px; 
+      margin-top: 30px; 
+      border-bottom: 2px solid #8e44ad; 
+      padding-bottom: 6px;
+      color: #2c3e50;
+    }
+    .left h2 {
+      color: #fff;
+      border-bottom: 2px solid #fff;
+      font-size: 16px;
+    }
+    .section { 
+      margin-bottom: 20px; 
+    }
+    .info-pair { 
+      margin-bottom: 15px; 
+    }
+    .data-label { 
+      font-weight: bold; 
+      color: #ecf0f1; 
+    }
+    ul { 
+      padding-left: 20px; 
+      margin: 0; 
+    }
+    li {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    small { 
+      color: #555; 
+      font-style: italic;
+    }
+    .left small {
+      color: #ecf0f1;
+    }
+    p {
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    strong {
+      color: #2c3e50;
+    }
+    .left strong {
+      color: #fff;
+    }
+    .contact-item {
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+    .experience-item {
+      border-left: 3px solid #8e44ad;
+      padding-left: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      {% if cv.photo_url %}
+        <img src="{{ cv.photo_url }}" class="photo" alt="Foto">
+      {% endif %}
+      
+      <div class="section">
+        <h2>DATA DIRI</h2>
+        {% if cv.city %}
+          <div class="info-pair">
+            <span class="data-label">Kota Domisili:</span><br>
+            {{ cv.city }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="section">
+        <h2>KONTAK</h2>
+        {% if cv.phone %}
+          <div class="contact-item">📞 {{ cv.phone }}</div>
+        {% endif %}
+        {% if cv.email %}
+          <div class="contact-item">✉️ {{ cv.email }}</div>
+        {% endif %}
+      </div>
+      
+      {% if cv.skills %}
+        <div class="section">
+          <h2>KEMAMPUAN</h2>
+          <ul>
+            {% for skill in cv.skills %}
+              <li><strong>{{ skill.name }}</strong>{% if skill.level %} — {{ skill.level }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      
+      {% if cv.languages %}
+        <div class="section">
+          <h2>BAHASA</h2>
+          <ul>
+            {% for lang in cv.languages %}
+              <li>{{ lang.name }}{% if lang.proficiency %} — {{ lang.proficiency }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="right">
+      <h1>{{ cv.first_name }} {{ cv.last_name }}</h1>
+      
+      {% if cv.job_title %}
+        <p style="font-size: 16px; color: #8e44ad; font-weight: bold; margin-top: 5px;">{{ cv.job_title }}</p>
+      {% endif %}
+
+      {% if cv.profile_description %}
+        <div class="section">
+          <h2>PROFIL</h2>
+          <p>{{ cv.profile_description }}</p>
+        </div>
+      {% endif %}
+
+      {% if cv.experiences %}
+        <div class="section">
+          <h2>PENGALAMAN KERJA</h2>
+          {% for exp in cv.experiences %}
+            <div class="experience-item">
+              <strong>{{ exp.job_title }}</strong> @ {{ exp.company }}<br>
+              <small>{{ exp.start_date or '-' }} - {{ exp.end_date or '-' }}</small><br>
+              {% if exp.description %}<p>{{ exp.description }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if cv.educations %}
+        <div class="section">
+          <h2>PENDIDIKAN</h2>
+          <ul>
+            {% for edu in cv.educations %}
+              <li>
+                <strong>{{ edu.school_name or '' }}</strong>{% if edu.degree %} — {{ edu.degree }}{% endif %}<br>
+                {% if edu.start_date or edu.end_date %}
+                  <small>{{ edu.start_date or '-' }} - {{ edu.end_date or '-' }}</small><br>
+                {% endif %}
+                {% if edu.major %}<em>{{ edu.major }}</em>{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if cv.leaderships %}
+        <div class="section">
+          <h2>KEPEMIMPINAN</h2>
+          {% for lead in cv.leaderships %}
+            <div class="experience-item">
+              <strong>{{ lead.role }}</strong> di {{ lead.organization }}<br>
+              <small>{{ lead.start_date or '-' }} - {{ lead.end_date or '-' }}</small><br>
+              {% if lead.description %}<p>{{ lead.description }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if cv.activities %}
+        <div class="section">
+          <h2>AKTIVITAS</h2>
+          {% for act in cv.activities %}
+            <div class="experience-item">
+              <strong>{{ act.name }}</strong><br>
+              <small>{{ act.start_date or '-' }} - {{ act.end_date or '-' }}</small><br>
+              {% if act.description %}<p>{{ act.description }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if cv.interests %}
+        <div class="section">
+          <h2>MINAT</h2>
+          <ul>
+            {% for interest in cv.interests %}
+              <li>{{ interest.description }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
