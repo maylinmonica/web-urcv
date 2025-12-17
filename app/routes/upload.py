@@ -1,5 +1,7 @@
 import os
-from flask import Blueprint, request, jsonify, current_app
+import cloudinary
+import cloudinary.uploader
+from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
@@ -16,27 +18,32 @@ def upload_photo():
         return jsonify({"error": "Tidak ada file foto"}), 400
 
     file = request.files['photo']
+
     if file.filename == '':
         return jsonify({"error": "Nama file kosong"}), 400
 
+    # 🔍 PRINT DEBUG — TARUH DI SINI
+    print("CLOUD NAME:", cloudinary.config().cloud_name)
+    print("FILE NAME:", file.filename)
+
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}"
+        try:
+            result = cloudinary.uploader.upload(
+                file,
+                folder="urcv/profile",
+                resource_type="image"
+            )
 
-        # Path folder penyimpanan
-        upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
-        os.makedirs(upload_folder, exist_ok=True)
+            return jsonify({
+                "msg": "Upload berhasil",
+                "photo_url": result["secure_url"]
+            }), 200
 
-        # Simpan file
-        file_path = os.path.join(upload_folder, filename)
-        file.save(file_path)
-
-        # Buat URL lengkap agar bisa ditampilkan React
-        photo_url = request.host_url.rstrip('/') + f"/static/uploads/{filename}"
-
-        return jsonify({
-            "msg": "Upload berhasil",
-            "photo_url": photo_url
-        }), 200
+        except Exception as e:
+            print("UPLOAD ERROR:", e)  # ⬅️ INI PENTING
+            return jsonify({
+                "error": "Upload gagal",
+                "detail": str(e)
+            }), 500
 
     return jsonify({"error": "Format file tidak diperbolehkan"}), 400
